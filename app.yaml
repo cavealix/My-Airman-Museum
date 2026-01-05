@@ -1,0 +1,17 @@
+runtime: python312    # Any recent Python runtime works for static sites
+
+handlers:
+  # Serve CSS, JS, images, fonts, etc. directly
+  - url: /(.*\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot))
+    static_files: \1
+    upload: (.*\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot))
+
+  # Serve index.html at root
+  - url: /
+    static_files: index.html
+    upload: index.html
+
+  # Catch-all: serve index.html for any other path (good for single-page apps)
+  - url: /.*
+    static_files: index.html
+    upload: index.html

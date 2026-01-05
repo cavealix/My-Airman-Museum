@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paver Finder</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="Bricks_app.css">
+</head>
+
+<body>
+    <header>
+        <h1>Paver Finder</h1>
+    </header>
+
+    <main>
+        <div class="search-container">
+            <div class="input-group">
+                <input type="text" id="searchInput" placeholder="Search by name or brick number...">
+                <button class="search-btn" onclick="searchPavers()">Search</button>
+            </div>
+        </div>
+
+        <div id="results"></div>
+        <div id="map-container"></div>
+    </main>
+
+    <script>
+        // --- CONFIGURATION ---
+        const SUPABASE_URL = 'https://alnxhbrtfcngfcnhskof.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbnhoYnJ0ZmNuZ2Zjbmhza29mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MzcyODksImV4cCI6MjA4MTQxMzI4OX0.bBidFo93JJnXQM6nBA9u_u9Kc4p-x7VSaYzCoNCZBuY';
+        const GOOGLE_MAPS_KEY = 'AIzaSyCfcA4-8Bp4xjuhGzKMUpZGxi3h9IjA4Ko';
+        // ---------------------
+
+        const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let map;
+        let marker;
+
+        async function initMap() {
+            // Initialize map but keep it hidden until needed
+            const defaultPos = { lat: 39.8283, lng: -98.5795 }; // Center of USA default
+            try {
+                const { Map } = await google.maps.importLibrary("maps");
+                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+                map = new Map(document.getElementById("map-container"), {
+                    zoom: 15,
+                    center: defaultPos,
+                    mapId: "DEMO_MAP_ID", // Required for AdvancedMarkerElement
+                    mapTypeId: google.maps.MapTypeId.SATELLITE
+                });
+            } catch (e) {
+                console.error("Map load failed", e);
+            }
+        }
+
+        async function searchPavers() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            const resultsDiv = document.getElementById('results');
+            const mapContainer = document.getElementById('map-container');
+
+            // UI Reset
+            resultsDiv.innerHTML = '<div class="no-results">Searching...</div>';
+            mapContainer.style.display = 'none';
+
+            try {
+                let queryBuilder = sbClient
+                    .from('Bricks')
+                    .select('*');
+
+                if (!isNaN(query)) {
+                    // It's a number, so we can search Name_Key (int) OR Paver_Lines (string)
+                    queryBuilder = queryBuilder.or(`Paver_Lines.ilike.%${query}%,Name_Key.eq.${query}`);
+                } else {
+                    // It's text, so split by spaces and search for all parts (AND logic)
+                    const terms = query.split(/\s+/).filter(t => t.length > 0);
+                    terms.forEach(term => {
+                        queryBuilder = queryBuilder.ilike('Paver_Lines', `%${term}%`);
+                    });
+                }
+
+                const { data, error } = await queryBuilder
+                    .not('Lat', 'is', null)
+                    .not('Lon', 'is', null);
+
+                if (error) throw error;
+
+                // Deduplicate results based on Name_Key
+                const uniqueData = data ? Array.from(new Map(data.map(item => [item.Name_Key, item])).values()) : [];
+
+                if (uniqueData.length === 0) {
+                    resultsDiv.innerHTML = '<div class="no-results">No matches found.</div>';
+                    return;
+                }
+
+                renderResults(uniqueData);
+
+            } catch (err) {
+                console.error('Error:', err);
+                resultsDiv.innerHTML = `<div class="no-results">Error: ${err.message}</div>`;
+            }
+        }
+
+        function renderResults(data) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'result-item';
+                div.innerHTML = `
+                    <span class="result-name">${escapeHtml(item.Paver_Lines)}</span>
+                    <span class="result-arrow">📍</span>
+                `;
+                div.onclick = () => selectPaver(item);
+                resultsDiv.appendChild(div);
+            });
+        }
+
+        async function selectPaver(item) {
+            // Ensure we have lat/lon
+            if (!item.Lat || !item.Lon) {
+                alert("Location data missing for this entry.");
+                return;
+            }
+
+            const lat = parseFloat(item.Lat);
+            const lng = parseFloat(item.Lon);
+
+            // Show map
+            const mapContainer = document.getElementById('map-container');
+            mapContainer.style.display = 'block';
+
+            // Scroll to map on mobile
+            if (window.innerWidth < 640) {
+                mapContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            if (map) {
+                const pos = { lat, lng };
+                map.setCenter(pos);
+                map.setZoom(18); // Close zoom for specific paver
+
+                if (marker) marker.setMap(null); // Remove old
+
+                // Create new marker
+                try {
+                    const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+                    marker = new AdvancedMarkerElement({
+                        map: map,
+                        position: pos,
+                        title: item.Paver_Lines
+                    });
+                } catch (e) {
+                    // Fallback if marker lib fails
+                    new google.maps.Marker({
+                        position: pos,
+                        map: map,
+                        title: item.Paver_Lines
+                    });
+                }
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Handle "Enter" key in search box
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                searchPavers();
+            }
+        });
+
+    </script>
+
+    <!-- Load Google Maps -->
+    <script>
+        (g => { var h, a, k, p = "The Google Maps JavaScript API", c = "google", l = "importLibrary", q = "__ib__", m = document, b = window; b = b[c] || (b[c] = {}); var d = b.maps || (b.maps = {}), r = new Set, e = new URLSearchParams, u = () => h || (h = new Promise(async (f, n) => { await (a = m.createElement("script")); e.set("libraries", [...r] + ""); for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]); e.set("callback", c + ".maps." + q); a.src = `https://maps.${c}apis.com/maps/api/js?` + e; d[q] = f; a.onerror = () => h = n(Error(p + " could not load.")); a.nonce = m.querySelector("script[nonce]")?.nonce || ""; m.head.append(a) })); d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n)) })({
+            key: "AIzaSyCfcA4-8Bp4xjuhGzKMUpZGxi3h9IjA4Ko",
+            v: "weekly",
+        });
+
+        // Start map init
+        window.addEventListener('load', initMap);
+    </script>
+</body>
+
+</html>
