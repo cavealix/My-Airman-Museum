@@ -113,7 +113,7 @@
                 const div = document.createElement('div');
                 div.className = 'result-item';
                 div.innerHTML = `
-                    <span class="result-name">${escapeHtml(item.Paver_Lines)}</span>
+                    <span class="result-name">${escapeHtml(item.Paver_Lines)} - Row:${item.Row}, Column:${item.Column}</span>
                     <span class="result-arrow">📍</span>
                 `;
                 div.onclick = () => selectPaver(item);
