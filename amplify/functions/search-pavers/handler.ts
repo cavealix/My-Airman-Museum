@@ -25,9 +25,12 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
     }
 
     // Connect to the RDS instance
+    // Remove query parameters like ?sslmode=require from the connection string to allow our ssl object config to take precedence
+    const cleanDbUrl = dbUrl.split('?')[0];
+
     const client = new Client({
-        connectionString: dbUrl,
-        ssl: { rejectUnauthorized: false } // Required for Supabase/RDS often
+        connectionString: cleanDbUrl,
+        ssl: { rejectUnauthorized: false } // Required for connecting to RDS
     });
 
     try {
@@ -46,7 +49,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
             dbResult = await client.query(sql, [`%${query}%`, parseInt(query, 10)]);
         } else {
             // It's text, split by spaces and search (AND logic)
-            const terms = query.split(/\\s+/).filter(t => t.length > 0);
+            // Fix regex bug (double escaping \\s+)
+            const terms = query.split(/\s+/).filter(t => t.length > 0);
 
             let sql = 'SELECT * FROM "Bricks" WHERE ';
             const conditions: string[] = [];
