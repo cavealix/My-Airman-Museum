@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Paver Finder</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Include the AWS Amplify bundle from CDN for simple HTML use -->
+    <script src="https://cdn.jsdelivr.net/npm/aws-amplify@6.0.28/dist/aws-amplify.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="Bricks_app.css">
 </head>
@@ -29,12 +30,9 @@
 
     <script>
         // --- CONFIGURATION ---
-        const SUPABASE_URL = 'https://alnxhbrtfcngfcnhskof.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsbnhoYnJ0ZmNuZ2Zjbmhza29mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MzcyODksImV4cCI6MjA4MTQxMzI4OX0.bBidFo93JJnXQM6nBA9u_u9Kc4p-x7VSaYzCoNCZBuY';
         const GOOGLE_MAPS_KEY = 'AIzaSyCfcA4-8Bp4xjuhGzKMUpZGxi3h9IjA4Ko';
         // ---------------------
 
-        const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let map;
         let marker;
 
@@ -68,29 +66,18 @@
             mapContainer.style.display = 'none';
 
             try {
-                let queryBuilder = sbClient
-                    .from('Bricks')
-                    .select('*');
+                // Fetch from the Amplify backend API using standard fetch to API Gateway
+                // Note: The specific API URL will be available once `amplify sandbox` or `amplify pipeline` executes.
+                // Replace '/api/search' with the deployed AWS API Gateway URL or use aws-amplify client.
+                // For this pure HTML/JS setup, we expect the frontend is bundled or rewrites /api/search.
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
 
-                if (!isNaN(query)) {
-                    // It's a number, so we can search Name_Key (int) OR Paver_Lines (string)
-                    queryBuilder = queryBuilder.or(`Paver_Lines.ilike.%${query}%,Name_Key.eq.${query}`);
-                } else {
-                    // It's text, so split by spaces and search for all parts (AND logic)
-                    const terms = query.split(/\s+/).filter(t => t.length > 0);
-                    terms.forEach(term => {
-                        queryBuilder = queryBuilder.ilike('Paver_Lines', `%${term}%`);
-                    });
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || 'Failed to fetch results');
                 }
 
-                const { data, error } = await queryBuilder
-                    .not('Lat', 'is', null)
-                    .not('Lon', 'is', null);
-
-                if (error) throw error;
-
-                // Deduplicate results based on Name_Key
-                const uniqueData = data ? Array.from(new Map(data.map(item => [item.Name_Key, item])).values()) : [];
+                const uniqueData = await response.json();
 
                 if (uniqueData.length === 0) {
                     resultsDiv.innerHTML = '<div class="no-results">No matches found.</div>';

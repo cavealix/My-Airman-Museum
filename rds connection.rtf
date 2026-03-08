@@ -1,0 +1,98 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2709
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;\f1\froman\fcharset0 Times-Bold;\f2\froman\fcharset0 Times-Roman;
+\f3\fmodern\fcharset0 Courier;}
+{\colortbl;\red255\green255\blue255;\red249\green249\blue249;\red24\green24\blue24;\red213\green213\blue213;
+\red212\green214\blue154;\red26\green26\blue26;\red194\green126\blue101;\red202\green202\blue202;\red224\green224\blue224;
+\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c98039\c98039\c98039;\cssrgb\c12157\c12157\c12157;\cssrgb\c86667\c86667\c86667;
+\cssrgb\c86275\c86275\c66667;\cssrgb\c13333\c13333\c13333;\cssrgb\c80784\c56863\c47059;\cssrgb\c83137\c83137\c83137;\cssrgb\c90196\c90196\c90196;
+\cssrgb\c0\c0\c0;}
+\margl1440\margr1440\vieww17860\viewh3520\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs24 \cf2 \cb3 \expnd0\expndtw0\kerning0
+bricks.cyzw0qo6gkis.us-east-1.rds.amazonaws.com
+\fs26 \cf4 \cb3 \
+\
+8Bc2zLuPDuV6ucD\
+\
+\
+postgresql://postgres:8Bc2zLuPDuV6ucD@
+\fs24 \cf2 \cb3 bricks.cyzw0qo6gkis.us-east-1.rds.amazonaws.com
+\fs26 \cf4 \cb3 :5432/bricks?sslmode=require\
+\
+\
+\
+pg_dump "postgresql://postgres.alnxhbrtfcngfcnhskof:
+\fs24 \cf2 \cb3 weuBiZRM5m4TMd2
+\fs26 \cf4 \cb3 @aws-0-us-west-2.pooler.supabase.com:5432/postgres" \\\
+  --clean --if-exists --no-owner --no-privileges \\\
+  > supabase_backup_$(date +%Y%m%d).sql\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b\fs24 \cf0 \cb1 Globals/Roles
+\f2\b0  (as above):\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f3\fs23\fsmilli11700 \cf5 \cb6 npx\cf7  supabase db dump --db-url 
+\f0\fs24 \cf2 \cb3 postgresql://postgres:weuBiZRM5m4TMd2@db.alnxhbrtfcngfcnhskof.supabase.co:5432/postgres
+\f3\fs23\fsmilli11700 \cf7 \cb6  --role-only\cf8  >\cf7  roles.sql\cf9 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs24 \cf0 \cb1 \
+\
+
+\f1\b Schema
+\f2\b0  (structure, tables, functions, etc.):\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f3\fs23\fsmilli11700 \cf5 \cb6 npx\cf7  supabase db dump --db-url 
+\f0\fs24 \cf2 \cb3 postgresql://postgres:[weuBiZRM5m4TMd2]@db.alnxhbrtfcngfcnhskof.supabase.co:5432/postgres
+\f3\fs23\fsmilli11700 \cf8 \cb6  >\cf7  schema.sql\cf9 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs24 \cf0 \cb1 \
+\
+(No flags needed; it defaults to schema-only.)\
+
+\f1\b Data
+\f2\b0  (rows/content):\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f3\fs23\fsmilli11700 \cf5 \cb6 npx\cf7  supabase db dump --db-url 
+\f0\fs24 \cf2 \cb3 postgresql://postgres:[weuBiZRM5m4TMd2]@db.alnxhbrtfcngfcnhskof.supabase.co:5432/postgres
+\f3\fs23\fsmilli11700 \cf7 \cb6  --use-copy --data-only\cf8  >\cf7  data.sql\cf9 \
+\
+\
+psql -h bricks.cyzw0qo6gkis.us-east-1.rds.amazonaws.com -U alix_cave -d postgres\
+\
+\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f2\fs24 \cf0 \cb1 psql \\\
+  -h bricks.cyzw0qo6gkis.us-east-1.rds.amazonaws.com \\\
+  -U alix_cave \\\
+  -d bricks \\\
+  -f /Downloads/Bricks_rows.sql\
+\
+\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 psql \\\
+  -h bricks.cyzw0qo6gkis.us-east-1.rds.amazonaws.com \\\
+  -U alix_cave \\\
+  -d bricks \\\
+  -p 5432 \\\
+  --sslmode=verify-full \\\
+  --sslrootcert=~/Downloads/global-bundle.pem \\\
+  -f ~/Downloads/Bricks_rows.sql\
+\
+\pard\pardeftab720\sa240\partightenfactor0
+\cf0 \outl0\strokewidth0 \strokec10 psql \\\
+  "postgresql://postgres@bricks.cyzew0qo6gkis.us-east-1.rds.amazonaws.com:5432/bricks?sslmode=verify-full&sslrootcert=/Users/alixcave/Downloads/global-bundle.pem" \\\
+  -f ~/Downloads/Bricks_rows.sql\
+}
