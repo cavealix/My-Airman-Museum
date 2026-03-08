@@ -1,25 +1,16 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
-import { searchPaversFunction } from '../functions/search-pavers/resource';
 
+/*== STEP 1 ===============================================================
+The section below creates a Todo database table with a "content" field. Try
+adding a new "isDone" field as a boolean. The authorization rule below
+specifies that any unauthenticated user can "create", "read", "update", 
+and "delete" any "Todo" records.
+=========================================================================*/
 const schema = a.schema({
-  // Define the return type of the search
-  PaverResult: a.customType({
-    Name_Key: a.integer(),
-    Paver_Lines: a.string(),
-    Lat: a.float(),
-    Lon: a.float(),
-    Row: a.integer(),
-    Column: a.integer(),
-  }),
-
-  // Define the custom query that calls our Lambda function
-  searchPavers: a
-    .query()
-    .arguments({
-      q: a.string().required()
+  Todo: a
+    .model({
+      content: a.string(),
     })
-    .returns(a.ref('PaverResult').array())
-    .handler(a.handler.function(searchPaversFunction))
     .authorization((allow) => [allow.guest()]),
 });
 
