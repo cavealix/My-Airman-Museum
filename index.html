@@ -67,7 +67,7 @@
         
             try {
                 // Use the full API Gateway URL with /search path and q= parameter
-                const apiUrl = `https://0sg0azj4vl.execute-api.us-east-1.amazonaws.com/ main/    search?q=${encodeURIComponent(query)}`;
+                const apiUrl = `https://0sg0azj4vl.execute-api.us-east-1.amazonaws.com/main/search?q=${encodeURIComponent(query)}`;
         
                 const response = await fetch(apiUrl, {
                     method: 'GET',
