@@ -21,7 +21,7 @@
           "rdsPassword": "8Bc2zLuPDuV6ucD",
           "rdsDb": "bricks",
           "deploymentBucketName": "amplify-myairmanmuseum-main-92c44-deployment",
-          "s3Key": "amplify-builds/rdsSearchHandler-54757174324754773138-build.zip"
+          "s3Key": "amplify-builds/rdsSearchHandler-3635484c705267325a35-build.zip"
         }
       },
       "auth": {

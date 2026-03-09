@@ -6,7 +6,13 @@ exports.handler = async (event) => {
   if (!query) {
     return {
       statusCode: 400,
-      body: JSON.stringify({ error: 'Missing query parameter q' })
+      body: JSON.stringify({ error: 'Missing query parameter q' }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',  // Or your Amplify domain for production
+        'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+        'Access-Control-Allow-Methods': 'OPTIONS,GET'
+      }
     };
   }
 
@@ -16,7 +22,7 @@ exports.handler = async (event) => {
     user: process.env.RDS_USER,
     password: process.env.RDS_PASSWORD,
     database: process.env.RDS_DB,
-    ssl: { rejectUnauthorized: false }  // Required for RDS SSL
+    ssl: { rejectUnauthorized: false }
   });
 
   try {
@@ -28,19 +34,30 @@ exports.handler = async (event) => {
       [`%${query}%`]
     );
 
-    // Dedup by Name_Key (client-side for simplicity)
+    // Dedup by Name_Key
     const uniqueData = Array.from(new Map(res.rows.map(item => [item.Name_Key, item])).values());
 
     return {
       statusCode: 200,
       body: JSON.stringify(uniqueData),
-      headers: { 'Content-Type': 'application/json' }
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',  // Or your Amplify domain for production
+        'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+        'Access-Control-Allow-Methods': 'OPTIONS,GET'
+      }
     };
   } catch (err) {
     console.error(err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Database query failed' })
+      body: JSON.stringify({ error: 'Database query failed' }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',  // Or your Amplify domain for production
+        'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
+        'Access-Control-Allow-Methods': 'OPTIONS,GET'
+      }
     };
   } finally {
     pool.end();
