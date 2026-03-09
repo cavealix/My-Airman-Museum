@@ -3,5 +3,12 @@ node_modules
 
 # amplify
 .amplify
-amplify_outputs*
+#amplify_outputs*
 amplifyconfiguration*
+
+# Node.js / npm cache
+.npm/
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
