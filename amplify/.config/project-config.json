@@ -1,0 +1,18 @@
+{
+  "whyContinueWithGen1": "I find the Gen 1 CLI easier to use",
+  "projectName": "MyAirmanMuseum",
+  "version": "3.1",
+  "frontend": "javascript",
+  "javascript": {
+    "framework": "none",
+    "config": {
+      "SourceDir": ".",
+      "DistributionDir": ".",
+      "BuildCommand": "",
+      "StartCommand": "npm run-script start"
+    }
+  },
+  "providers": [
+    "awscloudformation"
+  ]
+}

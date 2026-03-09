@@ -1,0 +1,20 @@
+{
+  "main": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-myairmanmuseum-main-a5276-authRole",
+      "UnauthRoleArn": "arn:aws:iam::705008887165:role/amplify-myairmanmuseum-main-a5276-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::705008887165:role/amplify-myairmanmuseum-main-a5276-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-myairmanmuseum-main-a5276-deployment",
+      "UnauthRoleName": "amplify-myairmanmuseum-main-a5276-unauthRole",
+      "StackName": "amplify-myairmanmuseum-main-a5276",
+      "StackId": "arn:aws:cloudformation:us-east-1:705008887165:stack/amplify-myairmanmuseum-main-a5276/1224c130-1be7-11f1-ac60-0afff969a38d",
+      "AmplifyAppId": "d1pkfqwawuajr1"
+    },
+    "categories": {
+      "api": {
+        "myairmanmuseum": {}
+      }
+    }
+  }
+}

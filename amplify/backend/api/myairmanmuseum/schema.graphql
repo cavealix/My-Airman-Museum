@@ -1,0 +1,13 @@
+type Brick @model {
+  id: ID!
+  Name_Key: Int
+  Paver_Lines: String
+  Row: Int
+  Column: Int
+  Lat: Float
+  Lon: Float
+}
+
+type Query {
+  searchPavers(query: String!): [Brick]
+}
