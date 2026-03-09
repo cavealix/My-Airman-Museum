@@ -57,38 +57,52 @@
         async function searchPavers() {
             const query = document.getElementById('searchInput').value.trim();
             if (!query) return;
-
+        
             const resultsDiv = document.getElementById('results');
             const mapContainer = document.getElementById('map-container');
-
+        
             // UI Reset
             resultsDiv.innerHTML = '<div class="no-results">Searching...</div>';
             mapContainer.style.display = 'none';
-
+        
             try {
-                // Fetch from the Amplify backend API using standard fetch to API Gateway
-                // Note: The specific API URL will be available once `amplify sandbox` or `amplify pipeline` executes.
-                // Replace '/api/search' with the deployed AWS API Gateway URL or use aws-amplify client.
-                // For this pure HTML/JS setup, we expect the frontend is bundled or rewrites /api/search.
-                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-
+                // Use the full API Gateway URL with /search path and q= parameter
+                const apiUrl = `https://0sg0azj4vl.execute-api.us-east-1.amazonaws.com/ main/    search?q=${encodeURIComponent(query)}`;
+        
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+        
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error || 'Failed to fetch results');
+                    throw new Error(errorData.error || `API returned ${response.status}`);
                 }
-
-                const uniqueData = await response.json();
-
+        
+                let data = await response.json();
+        
+                // If your Lambda returns { results: [...] } or similar wrapper, adjust here
+                if (data.results) {
+                    data = data.results;
+                }
+        
+                // Deduplicate by Name_Key (client-side safety)
+                const uniqueData = Array.from(
+                    new Map(data.map(item => [item.Name_Key, item])).values()
+                ).filter(item => item.Lat && item.Lon);
+        
                 if (uniqueData.length === 0) {
-                    resultsDiv.innerHTML = '<div class="no-results">No matches found.</div>';
+                    resultsDiv.innerHTML = '<div class="no-results">No matches found.</div>'    ;
                     return;
                 }
-
+        
                 renderResults(uniqueData);
-
+        
             } catch (err) {
-                console.error('Error:', err);
-                resultsDiv.innerHTML = `<div class="no-results">Error: ${err.message}</div>`;
+                console.error('Search error:', err);
+                resultsDiv.innerHTML = `<div class="no-results">Error: ${err.message}</div>`    ;
             }
         }
 
