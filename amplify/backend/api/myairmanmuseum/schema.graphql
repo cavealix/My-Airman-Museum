@@ -9,5 +9,7 @@ type Brick @model {
 }
 
 type Query {
-  searchPavers(query: String!): [Brick]
+  # Your search query now routes to the Lambda function
+  searchPavers(query: String!): [Brick] 
+    @function(name: "rdsSearchHandler-${env}")   # <-- This attaches your Lambda
 }

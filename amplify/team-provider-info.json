@@ -14,6 +14,16 @@
     "categories": {
       "api": {
         "myairmanmuseum": {}
+      },
+      "function": {
+        "rdsSearchHandler": {
+          "rdsHost": "bricks.cyzw0qo6gkis.us-east-1.rds.amazonaws.com",
+          "rdsPort": "5432",
+          "rdsUser": "alix_cave",
+          "rdsPassword": "K8ag4%SMwZ7ftY5j",
+          "rdsDb": "bricks",
+          "secretsPathAmplifyAppId": "d1pkfqwawuajr1"
+        }
       }
     }
   }

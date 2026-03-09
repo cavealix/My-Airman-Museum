@@ -16,5 +16,63 @@
       "providerPlugin": "awscloudformation",
       "service": "AppSync"
     }
+  },
+  "function": {
+    "rdsSearchHandler": {
+      "build": true,
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_rdsSearchHandler_rdsDb": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rdsSearchHandler"
+        }
+      ]
+    },
+    "AMPLIFY_function_rdsSearchHandler_rdsHost": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rdsSearchHandler"
+        }
+      ]
+    },
+    "AMPLIFY_function_rdsSearchHandler_rdsPassword": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rdsSearchHandler"
+        }
+      ]
+    },
+    "AMPLIFY_function_rdsSearchHandler_rdsPort": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rdsSearchHandler"
+        }
+      ]
+    },
+    "AMPLIFY_function_rdsSearchHandler_rdsUser": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rdsSearchHandler"
+        }
+      ]
+    },
+    "AMPLIFY_function_rdsSearchHandler_secretsPathAmplifyAppId": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rdsSearchHandler"
+        }
+      ]
+    }
   }
 }
