@@ -85,11 +85,15 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
             body: JSON.stringify(uniqueData)
         };
 
-    } catch (error) {
+    } catch (error: any) {
         console.error("Database query failed:", error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "Database query failed" })
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            },
+            body: JSON.stringify({ error: `Database query failed: ${error.message || String(error)}` })
         };
     } finally {
         await client.end();
