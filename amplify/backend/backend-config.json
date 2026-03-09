@@ -1,31 +1,62 @@
 {
   "api": {
+    "brickSearchApi": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "rdsSearchHandler"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "auth": {
     "myairmanmuseum": {
       "dependsOn": [],
-      "output": {
-        "authConfig": {
-          "additionalAuthenticationProviders": [],
-          "defaultAuthentication": {
-            "apiKeyConfig": {
-              "apiKeyExpirationDays": 7
-            },
-            "authenticationType": "API_KEY"
-          }
-        }
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [],
+        "usernameAttributes": [],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
       },
       "providerPlugin": "awscloudformation",
-      "service": "AppSync"
+      "service": "Cognito",
+      "serviceType": "managed"
     }
   },
   "function": {
     "rdsSearchHandler": {
       "build": true,
-      "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
     }
   },
   "parameters": {
+    "AMPLIFY_function_rdsSearchHandler_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "rdsSearchHandler"
+        }
+      ]
+    },
     "AMPLIFY_function_rdsSearchHandler_rdsDb": {
       "usedBy": [
         {
@@ -66,7 +97,7 @@
         }
       ]
     },
-    "AMPLIFY_function_rdsSearchHandler_secretsPathAmplifyAppId": {
+    "AMPLIFY_function_rdsSearchHandler_s3Key": {
       "usedBy": [
         {
           "category": "function",

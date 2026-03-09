@@ -1,5 +1,4 @@
 {
-  "permissions": {},
   "lambdaLayers": [],
   "environmentVariableList": [
     {
@@ -22,8 +21,5 @@
       "cloudFormationParameterName": "rdsDb",
       "environmentVariableName": "RDS_DB"
     }
-  ],
-  "secretNames": [
-    "n"
   ]
 }
